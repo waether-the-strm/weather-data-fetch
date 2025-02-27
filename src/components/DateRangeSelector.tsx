@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './DateRangeSelector.css';
 
 interface DateRange {
@@ -50,15 +50,6 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         startDate = new Date(endDate);
         if (startInput) startInput.value = formatDateForInput(startDate);
       }
-    }
-
-    // Sprawdź czy zakres nie jest większy niż 30 dni
-    const daysDifference = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (daysDifference > 30) {
-      setError('Maksymalny zakres dat to 30 dni');
-      return;
     }
 
     setError(null);
