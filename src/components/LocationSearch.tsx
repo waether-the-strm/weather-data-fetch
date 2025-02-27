@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
 import { parseCoordinates } from '../utils/coordinates';
+import { searchLocation, checkWeatherAvailability } from '../services/weatherService';
+import { LocationSearchResult } from '../types/weather';
 import './LocationSearch.css';
 
-interface Location {
-  id: string;
-  name: string;
-  coordinates: {
-    lat: number;
-    lon: number;
-  };
-}
-
 interface LocationSearchProps {
-  onLocationSelect: (location: Location) => void;
+  onLocationSelect: (location: LocationSearchResult) => void;
 }
 
 export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<Location[]>([]);
+  const [results, setResults] = useState<LocationSearchResult[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
@@ -29,9 +22,10 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
     // Try to parse as coordinates immediately
     const coordinates = parseCoordinates(query);
     if (coordinates) {
-      const location: Location = {
+      const location: LocationSearchResult = {
         id: `${coordinates.lat},${coordinates.lon}`,
         name: `${coordinates.lat}, ${coordinates.lon}`,
+        country: '',
         coordinates,
       };
       setResults([location]);
@@ -52,25 +46,48 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
       // If we already have coordinates result, use it
       const coordinates = parseCoordinates(searchQuery);
       if (coordinates) {
-        const location: Location = {
+        const isAvailable = await checkWeatherAvailability(coordinates);
+        if (!isAvailable) {
+          setError('Brak danych pogodowych dla podanych współrzędnych');
+          setResults([]);
+          return;
+        }
+
+        const location: LocationSearchResult = {
           id: `${coordinates.lat},${coordinates.lon}`,
           name: `${coordinates.lat}, ${coordinates.lon}`,
+          country: '',
           coordinates,
         };
         setResults([location]);
         return;
       }
 
-      // TODO: Implement location name search using weather API
-      // For now, just show a placeholder result
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Symulacja opóźnienia API
-      setResults([
-        {
-          id: 'placeholder',
-          name: searchQuery,
-          coordinates: { lat: 0, lon: 0 },
-        },
-      ]);
+      // Search for location by name
+      const locations = await searchLocation(searchQuery);
+      if (locations.length === 0) {
+        setError('Nie znaleziono lokalizacji');
+        return;
+      }
+
+      // Check weather availability for each location
+      const availableLocations = await Promise.all(
+        locations.map(async (location) => {
+          const isAvailable = await checkWeatherAvailability(location.coordinates);
+          return isAvailable ? location : null;
+        })
+      );
+
+      const filteredLocations = availableLocations.filter(
+        (loc): loc is LocationSearchResult => loc !== null
+      );
+
+      if (filteredLocations.length === 0) {
+        setError('Brak danych pogodowych dla znalezionych lokalizacji');
+        return;
+      }
+
+      setResults(filteredLocations);
     } catch (err) {
       setError('Wystąpił błąd podczas wyszukiwania lokalizacji');
       console.error('Search error:', err);
@@ -116,7 +133,24 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
               onClick={() => onLocationSelect(location)}
               className="search-result-item"
             >
-              {location.name}
+              <svg
+                className="location-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className="location-name">
+                {location.name}
+                {location.country && ` (${location.country})`}
+              </span>
             </li>
           ))}
         </ul>

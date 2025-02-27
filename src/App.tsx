@@ -1,16 +1,8 @@
 import { LocationSearch } from './components/LocationSearch';
-
-interface Location {
-  id: string;
-  name: string;
-  coordinates: {
-    lat: number;
-    lon: number;
-  };
-}
+import { LocationSearchResult } from './types/weather';
 
 function App() {
-  const handleLocationSelect = (location: Location) => {
+  const handleLocationSelect = (location: LocationSearchResult) => {
     console.log('Selected location:', location);
   };
 

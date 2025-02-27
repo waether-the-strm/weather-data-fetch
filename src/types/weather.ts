@@ -51,3 +51,41 @@ export interface WeatherAPIResponse {
     timeseries: WeatherDataPoint[];
   };
 }
+
+export interface Coordinates {
+  lat: number;
+  lon: number;
+}
+
+export interface LocationSearchResult {
+  id: string;
+  name: string;
+  country: string;
+  coordinates: Coordinates;
+}
+
+export interface WeatherLocation {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: [number, number];
+  };
+  properties: {
+    meta: {
+      updated_at: string;
+    };
+    timeseries: Array<{
+      time: string;
+      data: {
+        instant: {
+          details: {
+            air_temperature: number;
+            precipitation_amount: number;
+            relative_humidity: number;
+            wind_speed: number;
+          };
+        };
+      };
+    }>;
+  };
+}
