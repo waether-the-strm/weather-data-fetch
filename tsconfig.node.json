@@ -8,6 +8,7 @@
     "target": "ES2022",
     "lib": ["ES2023"],
     "skipLibCheck": true,
+    "emitDeclarationOnly": true,
 
     /* Bundler mode */
     "allowImportingTsExtensions": true,
