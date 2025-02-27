@@ -60,31 +60,15 @@ function App() {
     setStatusMessage('Fetching weather data...');
 
     try {
-      const response = await getWeatherData(selectedLocation.coordinates);
+      const response = await getWeatherData(
+        selectedLocation.coordinates,
+        dateRange.startDate,
+        dateRange.endDate
+      );
       const data = response as WeatherAPIResponse;
 
       setIsProcessing(true);
       setStatusMessage('Processing weather data...');
-
-      // Log the time range from API
-      const timeRange = data.properties.timeseries.map((entry) => new Date(entry.time));
-      const earliestDate = new Date(Math.min(...timeRange.map((d) => d.getTime())));
-      const latestDate = new Date(Math.max(...timeRange.map((d) => d.getTime())));
-
-      console.log('API data range:', {
-        earliest: earliestDate.toISOString(),
-        latest: latestDate.toISOString(),
-        requestedStart: dateRange.startDate.toISOString(),
-        requestedEnd: dateRange.endDate.toISOString(),
-      });
-
-      // Check if requested dates are within available range
-      if (dateRange.startDate < earliestDate || dateRange.endDate > latestDate) {
-        setError(
-          `Weather data is only available from ${earliestDate.toLocaleDateString('en-US')} to ${latestDate.toLocaleDateString('en-US')}`
-        );
-        return;
-      }
 
       const processedData: WeatherData[] = data.properties.timeseries
         .filter((entry: WeatherDataPoint) => {
@@ -109,9 +93,7 @@ function App() {
       });
 
       if (processedData.length === 0) {
-        setError(
-          'No weather data available for the selected date range. The API provides only recent historical data and short-term forecast.'
-        );
+        setError('No weather data available for the selected date range.');
       } else {
         setWeatherData(processedData);
         setStatusMessage(
