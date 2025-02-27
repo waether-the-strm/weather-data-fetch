@@ -48,7 +48,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
       if (coordinates) {
         const isAvailable = await checkWeatherAvailability(coordinates);
         if (!isAvailable) {
-          setError('Brak danych pogodowych dla podanych współrzędnych');
+          setError('No weather data available for these coordinates');
           setResults([]);
           return;
         }
@@ -66,7 +66,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
       // Search for location by name
       const locations = await searchLocation(searchQuery);
       if (locations.length === 0) {
-        setError('Nie znaleziono lokalizacji');
+        setError('No locations found');
         return;
       }
 
@@ -83,13 +83,13 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
       );
 
       if (filteredLocations.length === 0) {
-        setError('Brak danych pogodowych dla znalezionych lokalizacji');
+        setError('No weather data available for found locations');
         return;
       }
 
       setResults(filteredLocations);
     } catch (err) {
-      setError('Wystąpił błąd podczas wyszukiwania lokalizacji');
+      setError('Error occurred while searching for location');
       console.error('Search error:', err);
     } finally {
       setIsLoading(false);
@@ -110,7 +110,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
           value={searchQuery}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Wpisz nazwę miejscowości lub współrzędne (np. 52.229676, 21.012229)"
+          placeholder="Enter city name or coordinates (e.g. 52.229676, 21.012229)"
           className="search-input"
           disabled={isLoading}
         />
@@ -119,7 +119,7 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
           onClick={handleSearch}
           disabled={isLoading || searchQuery.length < 2}
         >
-          {isLoading ? <span className="loader"></span> : 'Szukaj'}
+          {isLoading ? <span className="loader"></span> : 'Search'}
         </button>
       </div>
 

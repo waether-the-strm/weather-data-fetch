@@ -18,12 +18,12 @@ export async function searchLocation(query: string): Promise<LocationSearchResul
   const response = await fetch(`${NOMINATIM_URL}?${params}`, {
     headers: {
       ...headers,
-      'Accept-Language': 'pl',
+      'Accept-Language': 'en',
     },
   });
 
   if (!response.ok) {
-    throw new Error('Błąd podczas wyszukiwania lokalizacji');
+    throw new Error('Error while searching for location');
   }
 
   const data = await response.json();

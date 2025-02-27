@@ -69,7 +69,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     <div className="date-range-selector">
       <div className="date-inputs-container">
         <div className="date-input-group">
-          <label htmlFor="startDate">Data początkowa:</label>
+          <label htmlFor="startDate">Start Date:</label>
           <input
             type="date"
             id="startDate"
@@ -81,7 +81,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
           />
         </div>
         <div className="date-input-group">
-          <label htmlFor="endDate">Data końcowa:</label>
+          <label htmlFor="endDate">End Date:</label>
           <input
             type="date"
             id="endDate"
