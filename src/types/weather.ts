@@ -1,5 +1,5 @@
 export interface WeatherDetails {
-  air_pressure_at_sea_level?: number;
+  air_pressure_at_sea_level: number;
   air_temperature: number;
   cloud_area_fraction: number;
   relative_humidity: number;
@@ -20,12 +20,6 @@ export interface WeatherDataPoint {
     next_1_hours?: {
       details: Precipitation;
     };
-    next_2_hours?: {
-      details: Precipitation;
-    };
-    next_3_hours?: {
-      details: Precipitation;
-    };
   };
 }
 
@@ -33,7 +27,7 @@ export interface WeatherAPIResponse {
   type: string;
   geometry: {
     type: string;
-    coordinates: [number, number, number];
+    coordinates: [number, number];
   };
   properties: {
     meta: {

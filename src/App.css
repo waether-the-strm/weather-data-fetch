@@ -37,11 +37,19 @@
   width: 100%;
 }
 
-.fetch-data-button:hover {
+.fetch-data-button:hover:not(:disabled) {
   background-color: #2563eb;
 }
 
 .fetch-data-button:disabled {
   background-color: #93c5fd;
   cursor: not-allowed;
+}
+
+.data-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
 }
