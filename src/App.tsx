@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LocationSearch } from './components/LocationSearch';
 import { DateRangeSelector } from './components/DateRangeSelector';
 import { WeatherDataTable } from './components/WeatherDataTable';
+import { WeatherCharts } from './components/WeatherCharts';
 import { LocationSearchResult, WeatherAPIResponse, WeatherDataPoint } from './types/weather';
 import { getWeatherData } from './services/weatherService';
 import './App.css';
@@ -142,13 +143,20 @@ function App() {
           )}
         </section>
         {(weatherData.length > 0 || isLoading || isProcessing || error) && (
-          <section className="data-section">
-            <WeatherDataTable
-              data={weatherData}
-              isLoading={isLoading || isProcessing}
-              error={error || undefined}
-            />
-          </section>
+          <>
+            <section className="data-section">
+              <h2>Weather Charts</h2>
+              <WeatherCharts data={weatherData} />
+            </section>
+            <section className="data-section">
+              <h2>Weather Data Table</h2>
+              <WeatherDataTable
+                data={weatherData}
+                isLoading={isLoading || isProcessing}
+                error={error || undefined}
+              />
+            </section>
+          </>
         )}
       </main>
     </div>
