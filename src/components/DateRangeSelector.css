@@ -1,7 +1,13 @@
 .date-range-selector {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin: 1rem 0;
+}
+
+.date-inputs-container {
+  display: flex;
+  gap: 1rem;
 }
 
 .date-input-group {
@@ -23,6 +29,7 @@
   font-size: 1rem;
   outline: none;
   transition: all 0.2s ease;
+  width: 100%;
 }
 
 .date-input-group input:focus {
@@ -33,4 +40,13 @@
 .date-input-group input:disabled {
   background-color: #f3f4f6;
   cursor: not-allowed;
+}
+
+.date-range-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  background-color: #fee2e2;
+  border-radius: 0.375rem;
+  border: 1px solid #fecaca;
 }

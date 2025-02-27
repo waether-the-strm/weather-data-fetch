@@ -11,9 +11,14 @@ interface DateRange {
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState<LocationSearchResult | null>(null);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: new Date(),
-    endDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+  const [dateRange, setDateRange] = useState<DateRange>(() => {
+    const today = new Date();
+    const lastWeek = new Date();
+    lastWeek.setDate(today.getDate() - 7);
+    return {
+      startDate: lastWeek,
+      endDate: today,
+    };
   });
 
   const handleLocationSelect = (location: LocationSearchResult) => {
