@@ -3,6 +3,7 @@ import { LocationSearch } from './components/LocationSearch';
 import { DateRangeSelector } from './components/DateRangeSelector';
 import { WeatherDataTable } from './components/WeatherDataTable';
 import { WeatherCharts } from './components/WeatherCharts';
+import { InfoPanel } from './components/InfoPanel';
 import { LocationSearchResult, WeatherAPIResponse, WeatherDataPoint } from './types/weather';
 import { getWeatherData } from './services/weatherService';
 import './App.css';
@@ -159,6 +160,7 @@ function App() {
           </>
         )}
       </main>
+      <InfoPanel />
     </div>
   );
 }

@@ -64,3 +64,55 @@
   border-radius: 0.5rem;
   border: 1px solid #e2e8f0;
 }
+
+.data-source-info {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
+  max-width: 800px;
+}
+
+.data-source-info h3 {
+  color: #1e293b;
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+}
+
+.data-source-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.data-source-info li {
+  margin: 0.5rem 0;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.data-source-info li::before {
+  content: '•';
+  color: #3b82f6;
+}
+
+.data-source-info a {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.data-source-info a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.data-disclaimer {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-style: italic;
+}
