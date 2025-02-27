@@ -7,6 +7,17 @@ export default defineConfig({
   build: {
     sourcemap: true,
     outDir: 'build',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-transition-group'],
+          'mui-vendor': ['@mui/material', '@emotion/react', '@emotion/styled'],
+          'chart-vendor': ['recharts'],
+          'date-utils': ['date-fns'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
   resolve: {
     alias: {
