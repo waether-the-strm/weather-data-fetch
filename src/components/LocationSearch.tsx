@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { parseCoordinates } from '../utils/coordinates';
 import './LocationSearch.css';
 
 interface Location {
@@ -17,22 +18,50 @@ interface LocationSearchProps {
 export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Location[]>([]);
 
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
+    setError(null);
 
     if (query.length < 2) {
       setResults([]);
       return;
     }
 
+    // Try to parse as coordinates first
+    const coordinates = parseCoordinates(query);
+    if (coordinates) {
+      const location: Location = {
+        id: `${coordinates.lat},${coordinates.lon}`,
+        name: `${coordinates.lat}, ${coordinates.lon}`,
+        coordinates,
+      };
+      setResults([location]);
+      return;
+    }
+
     setIsLoading(true);
-    // TODO: Implement actual location search with Google Maps Geocoding API
-    // This is a placeholder for now
-    setResults([]);
-    setIsLoading(false);
+    try {
+      // TODO: Implement location name search using weather API
+      // For now, just show a placeholder result
+      if (query.length > 2) {
+        setResults([
+          {
+            id: 'placeholder',
+            name: query,
+            coordinates: { lat: 0, lon: 0 },
+          },
+        ]);
+      }
+    } catch (err) {
+      setError('Wystąpił błąd podczas wyszukiwania lokalizacji');
+      console.error('Search error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,11 +71,13 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
           type="text"
           value={searchQuery}
           onChange={handleSearch}
-          placeholder="Wyszukaj lokalizację..."
+          placeholder="Wpisz nazwę miejscowości lub współrzędne (np. 52.229676, 21.012229)"
           className="search-input"
         />
         {isLoading && <div className="loading-indicator">Ładowanie...</div>}
       </div>
+
+      {error && <div className="error-message">{error}</div>}
 
       {results.length > 0 && (
         <ul className="search-results">
