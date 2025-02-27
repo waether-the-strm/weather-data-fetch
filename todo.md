@@ -2,12 +2,12 @@
 
 ## High Priority
 
-- [ ] Set up basic web application structure
+- [x] Set up basic web application structure
 
-  - [ ] Initialize React/Next.js project
-  - [ ] Configure TypeScript
-  - [ ] Set up ESLint and Prettier
-  - [ ] Create basic project structure (components, pages, utils)
+  - [x] Initialize React/Next.js project
+  - [x] Configure TypeScript
+  - [x] Set up ESLint and Prettier
+  - [x] Create basic project structure (components, pages, utils)
 
 - [ ] Implement location input
 
