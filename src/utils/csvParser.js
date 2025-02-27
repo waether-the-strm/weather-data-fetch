@@ -1,5 +1,5 @@
-const fs = require("fs");
-const { parse } = require("csv-parse");
+import fs from 'fs';
+import { parse } from 'csv-parse';
 
 async function parseCSVFile(filePath) {
   const records = [];
@@ -8,14 +8,14 @@ async function parseCSVFile(filePath) {
       columns: true,
       skip_empty_lines: true,
       from_line: 2, // Skip the header with metadata
-      delimiter: ";",
+      delimiter: ';',
     })
   );
 
   for await (const record of parser) {
     // Debug log
     if (records.length === 0) {
-      console.log("First record structure:", record);
+      console.log('First record structure:', record);
     }
     records.push(record);
   }

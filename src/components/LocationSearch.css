@@ -1,0 +1,130 @@
+.location-search {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input-container {
+  position: relative;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.search-button:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.search-result-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  color: #1e293b;
+}
+
+.search-result-item:hover {
+  background-color: #f8fafc;
+  padding-left: 1.25rem;
+}
+
+.search-result-item:not(:last-child) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #fee2e2;
+  border-radius: 0.375rem;
+  border: 1px solid #fecaca;
+}
+
+.location-icon {
+  color: #3b82f6;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.location-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

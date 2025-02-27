@@ -1,5 +1,5 @@
-const { parseCSVFile } = require("../src/utils/csvParser");
-const path = require("path");
+import { parseCSVFile } from '../src/utils/csvParser';
+import path from 'path';
 
 const LATITUDE = 66.2167;
 const LONGITUDE = 13.6167;
@@ -8,20 +8,17 @@ const NO_DATA_VALUE = 65535;
 
 // Helper function to parse CSV date format to ISO string
 function parseCSVDate(dateStr) {
-  if (!dateStr || typeof dateStr !== "string") {
-    console.error("Invalid date string:", dateStr);
+  if (!dateStr || typeof dateStr !== 'string') {
+    console.error('Invalid date string:', dateStr);
     return null;
   }
 
   try {
-    const [datePart, timePart] = dateStr.split(" ");
-    const [day, month, year] = datePart.split(".");
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(
-      2,
-      "0"
-    )}T${timePart}`;
+    const [datePart, timePart] = dateStr.split(' ');
+    const [day, month, year] = datePart.split('.');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}`;
   } catch (error) {
-    console.error("Error parsing date:", dateStr, error);
+    console.error('Error parsing date:', dateStr, error);
     return null;
   }
 }
@@ -37,39 +34,39 @@ function sumPrecipitation3h(entry) {
     if (next2h > 0) return next2h;
     return next1h;
   } catch (error) {
-    console.error("Error calculating precipitation:", error);
+    console.error('Error calculating precipitation:', error);
     return 0;
   }
 }
 
-describe("Weather Data Validation", () => {
+describe('Weather Data Validation', () => {
   let referenceData;
 
   beforeAll(async () => {
     // Load reference data from CSV
-    const csvPath = path.join(__dirname, "..", "precip_CM39.csv");
+    const csvPath = path.join(__dirname, '..', 'precip_CM39.csv');
     referenceData = await parseCSVFile(csvPath);
-    console.log("Loaded reference data:", referenceData.slice(0, 2));
+    console.log('Loaded reference data:', referenceData.slice(0, 2));
   });
 
-  test("API data structure matches expected format", async () => {
+  test('API data structure matches expected format', async () => {
     const response = await fetch(API_URL, {
       headers: {
-        "User-Agent": "WeatherApp/1.0 (weather-data-fetch)",
+        'User-Agent': 'WeatherApp/1.0 (weather-data-fetch)',
       },
     });
     expect(response.ok).toBe(true);
 
     const data = await response.json();
-    expect(data).toHaveProperty("properties");
-    expect(data.properties).toHaveProperty("timeseries");
+    expect(data).toHaveProperty('properties');
+    expect(data.properties).toHaveProperty('timeseries');
     expect(Array.isArray(data.properties.timeseries)).toBe(true);
   });
 
-  test("Precipitation data matches reference values within acceptable margin", async () => {
+  test('Precipitation data matches reference values within acceptable margin', async () => {
     const response = await fetch(API_URL, {
       headers: {
-        "User-Agent": "WeatherApp/1.0 (weather-data-fetch)",
+        'User-Agent': 'WeatherApp/1.0 (weather-data-fetch)',
       },
     });
     const data = await response.json();
@@ -77,11 +74,11 @@ describe("Weather Data Validation", () => {
 
     // Get only valid reference data (exclude NO_DATA_VALUE)
     const validReferenceData = referenceData.filter((record) => {
-      const precipValue = parseFloat(record["rr3h(mm)"]);
+      const precipValue = parseFloat(record['rr3h(mm)']);
       return !isNaN(precipValue) && precipValue !== NO_DATA_VALUE;
     });
 
-    console.log("Valid reference data count:", validReferenceData.length);
+    console.log('Valid reference data count:', validReferenceData.length);
 
     // Compare only recent data that overlaps with API forecast
     const recentReferenceData = validReferenceData.filter((record) => {
@@ -91,12 +88,10 @@ describe("Weather Data Validation", () => {
       const recordDate = new Date(isoDate);
       const now = new Date();
       // Check if the record is within the last 24 hours
-      return (
-        recordDate >= new Date(now - 24 * 60 * 60 * 1000) && recordDate <= now
-      );
+      return recordDate >= new Date(now - 24 * 60 * 60 * 1000) && recordDate <= now;
     });
 
-    console.log("Recent reference data count:", recentReferenceData.length);
+    console.log('Recent reference data count:', recentReferenceData.length);
 
     for (const record of recentReferenceData) {
       const isoDate = parseCSVDate(record.Date);
@@ -113,7 +108,7 @@ describe("Weather Data Validation", () => {
 
       if (apiRecord) {
         const apiPrecip = sumPrecipitation3h(apiRecord);
-        const refPrecip = parseFloat(record["rr3h(mm)"]);
+        const refPrecip = parseFloat(record['rr3h(mm)']);
 
         console.log(`Comparing precipitation for ${record.Date}:`);
         console.log(`  API: ${apiPrecip}mm, Reference: ${refPrecip}mm`);
@@ -124,10 +119,10 @@ describe("Weather Data Validation", () => {
     }
   });
 
-  test("Temperature data is within reasonable range for Hemnes", async () => {
+  test('Temperature data is within reasonable range for Hemnes', async () => {
     const response = await fetch(API_URL, {
       headers: {
-        "User-Agent": "WeatherApp/1.0 (weather-data-fetch)",
+        'User-Agent': 'WeatherApp/1.0 (weather-data-fetch)',
       },
     });
     const data = await response.json();
