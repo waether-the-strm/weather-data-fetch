@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DateRangeSelector.css';
 
 interface DateRange {
@@ -16,10 +16,13 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   disabled = false,
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Resetujemy czas do północy
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const date = new Date(value);
+    date.setHours(0, 0, 0, 0); // Resetujemy czas do północy
 
     const startInput = document.querySelector<HTMLInputElement>('input[name="startDate"]');
     const endInput = document.querySelector<HTMLInputElement>('input[name="endDate"]');
@@ -27,10 +30,26 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     let startDate = name === 'startDate' ? date : new Date(startInput?.value || '');
     let endDate = name === 'endDate' ? date : new Date(endInput?.value || '');
 
-    // Walidacja dat
-    if (startDate > endDate) {
-      setError('Data początkowa nie może być późniejsza niż końcowa');
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+
+    // Sprawdź czy daty nie są z przyszłości
+    if (startDate > today || endDate > today) {
+      setError('Nie można wybrać dat z przyszłości');
       return;
+    }
+
+    // Walidacja kolejności dat
+    if (startDate > endDate) {
+      if (name === 'startDate') {
+        // Jeśli zmieniono datę początkową, dostosuj datę końcową
+        endDate = new Date(startDate);
+        if (endInput) endInput.value = formatDateForInput(endDate);
+      } else {
+        // Jeśli zmieniono datę końcową, dostosuj datę początkową
+        startDate = new Date(endDate);
+        if (startInput) startInput.value = formatDateForInput(startDate);
+      }
     }
 
     // Sprawdź czy zakres nie jest większy niż 30 dni
@@ -52,8 +71,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   };
 
   // Domyślne daty: ostatnie 7 dni
-  const today = new Date();
-  const lastWeek = new Date();
+  const lastWeek = new Date(today);
   lastWeek.setDate(today.getDate() - 7);
 
   return (
@@ -66,6 +84,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             id="startDate"
             name="startDate"
             defaultValue={formatDateForInput(lastWeek)}
+            max={formatDateForInput(today)}
             onChange={handleDateChange}
             disabled={disabled}
           />
@@ -77,6 +96,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
             id="endDate"
             name="endDate"
             defaultValue={formatDateForInput(today)}
+            max={formatDateForInput(today)}
             onChange={handleDateChange}
             disabled={disabled}
           />
