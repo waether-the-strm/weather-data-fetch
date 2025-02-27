@@ -66,6 +66,26 @@ function App() {
       setIsProcessing(true);
       setStatusMessage('Processing weather data...');
 
+      // Log the time range from API
+      const timeRange = data.properties.timeseries.map((entry) => new Date(entry.time));
+      const earliestDate = new Date(Math.min(...timeRange.map((d) => d.getTime())));
+      const latestDate = new Date(Math.max(...timeRange.map((d) => d.getTime())));
+
+      console.log('API data range:', {
+        earliest: earliestDate.toISOString(),
+        latest: latestDate.toISOString(),
+        requestedStart: dateRange.startDate.toISOString(),
+        requestedEnd: dateRange.endDate.toISOString(),
+      });
+
+      // Check if requested dates are within available range
+      if (dateRange.startDate < earliestDate || dateRange.endDate > latestDate) {
+        setError(
+          `Weather data is only available from ${earliestDate.toLocaleDateString('en-US')} to ${latestDate.toLocaleDateString('en-US')}`
+        );
+        return;
+      }
+
       const processedData: WeatherData[] = data.properties.timeseries
         .filter((entry: WeatherDataPoint) => {
           const time = new Date(entry.time);
@@ -81,11 +101,22 @@ function App() {
           precipitation: entry.data.next_1_hours?.details.precipitation_amount || 0,
         }));
 
+      console.log('Processed data:', {
+        totalRecords: data.properties.timeseries.length,
+        filteredRecords: processedData.length,
+        startDate: dateRange.startDate.toISOString(),
+        endDate: dateRange.endDate.toISOString(),
+      });
+
       if (processedData.length === 0) {
-        setError('No weather data available for the selected date range');
+        setError(
+          'No weather data available for the selected date range. The API provides only recent historical data and short-term forecast.'
+        );
       } else {
         setWeatherData(processedData);
-        setStatusMessage(`Found ${processedData.length} weather records`);
+        setStatusMessage(
+          `Found ${processedData.length} weather records between ${dateRange.startDate.toLocaleDateString('en-US')} and ${dateRange.endDate.toLocaleDateString('en-US')}`
+        );
       }
     } catch (err) {
       setError('Error occurred while fetching weather data');
