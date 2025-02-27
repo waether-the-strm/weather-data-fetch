@@ -58,7 +58,7 @@ export async function getWeatherData(coordinates: Coordinates) {
   );
 
   if (!response.ok) {
-    throw new Error('Błąd podczas pobierania danych pogodowych');
+    throw new Error('Failed to fetch weather data from the server');
   }
 
   return response.json();

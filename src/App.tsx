@@ -34,18 +34,22 @@ function App() {
   });
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const handleLocationSelect = (location: LocationSearchResult) => {
     setSelectedLocation(location);
     setWeatherData([]);
     setError(null);
+    setStatusMessage(null);
   };
 
   const handleDateRangeChange = (range: DateRange) => {
     setDateRange(range);
     setWeatherData([]);
     setError(null);
+    setStatusMessage(null);
   };
 
   const handleFetchData = async () => {
@@ -53,10 +57,14 @@ function App() {
 
     setIsLoading(true);
     setError(null);
+    setStatusMessage('Fetching weather data...');
 
     try {
       const response = await getWeatherData(selectedLocation.coordinates);
       const data = response as WeatherAPIResponse;
+
+      setIsProcessing(true);
+      setStatusMessage('Processing weather data...');
 
       const processedData: WeatherData[] = data.properties.timeseries
         .filter((entry: WeatherDataPoint) => {
@@ -73,12 +81,18 @@ function App() {
           precipitation: entry.data.next_1_hours?.details.precipitation_amount || 0,
         }));
 
-      setWeatherData(processedData);
+      if (processedData.length === 0) {
+        setError('No weather data available for the selected date range');
+      } else {
+        setWeatherData(processedData);
+        setStatusMessage(`Found ${processedData.length} weather records`);
+      }
     } catch (err) {
       setError('Error occurred while fetching weather data');
       console.error('Fetch error:', err);
     } finally {
       setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
@@ -103,15 +117,24 @@ function App() {
                 {selectedLocation.coordinates.lon.toFixed(6)}
               </p>
               <DateRangeSelector onChange={handleDateRangeChange} />
-              <button className="fetch-data-button" onClick={handleFetchData} disabled={isLoading}>
-                {isLoading ? 'Fetching...' : 'Fetch Weather Data'}
+              <button
+                className="fetch-data-button"
+                onClick={handleFetchData}
+                disabled={isLoading || isProcessing}
+              >
+                {isLoading ? 'Fetching...' : isProcessing ? 'Processing...' : 'Fetch Weather Data'}
               </button>
+              {statusMessage && !error && <div className="status-message">{statusMessage}</div>}
             </div>
           )}
         </section>
-        {(weatherData.length > 0 || isLoading || error) && (
+        {(weatherData.length > 0 || isLoading || isProcessing || error) && (
           <section className="data-section">
-            <WeatherDataTable data={weatherData} isLoading={isLoading} error={error || undefined} />
+            <WeatherDataTable
+              data={weatherData}
+              isLoading={isLoading || isProcessing}
+              error={error || undefined}
+            />
           </section>
         )}
       </main>
