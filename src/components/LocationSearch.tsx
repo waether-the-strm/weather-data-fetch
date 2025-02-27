@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { parseCoordinates } from '../utils/coordinates';
 import './LocationSearch.css';
 
@@ -21,17 +21,12 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Location[]>([]);
 
-  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
     setError(null);
 
-    if (query.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    // Try to parse as coordinates first
+    // Try to parse as coordinates immediately
     const coordinates = parseCoordinates(query);
     if (coordinates) {
       const location: Location = {
@@ -40,27 +35,53 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
         coordinates,
       };
       setResults([location]);
+    } else if (query.length < 2) {
+      setResults([]);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (searchQuery.length < 2) {
       return;
     }
 
     setIsLoading(true);
+    setError(null);
+
     try {
+      // If we already have coordinates result, use it
+      const coordinates = parseCoordinates(searchQuery);
+      if (coordinates) {
+        const location: Location = {
+          id: `${coordinates.lat},${coordinates.lon}`,
+          name: `${coordinates.lat}, ${coordinates.lon}`,
+          coordinates,
+        };
+        setResults([location]);
+        return;
+      }
+
       // TODO: Implement location name search using weather API
       // For now, just show a placeholder result
-      if (query.length > 2) {
-        setResults([
-          {
-            id: 'placeholder',
-            name: query,
-            coordinates: { lat: 0, lon: 0 },
-          },
-        ]);
-      }
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Symulacja opóźnienia API
+      setResults([
+        {
+          id: 'placeholder',
+          name: searchQuery,
+          coordinates: { lat: 0, lon: 0 },
+        },
+      ]);
     } catch (err) {
       setError('Wystąpił błąd podczas wyszukiwania lokalizacji');
       console.error('Search error:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -70,11 +91,19 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onLocationSelect
         <input
           type="text"
           value={searchQuery}
-          onChange={handleSearch}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
           placeholder="Wpisz nazwę miejscowości lub współrzędne (np. 52.229676, 21.012229)"
           className="search-input"
+          disabled={isLoading}
         />
-        {isLoading && <div className="loading-indicator">Ładowanie...</div>}
+        <button
+          className="search-button"
+          onClick={handleSearch}
+          disabled={isLoading || searchQuery.length < 2}
+        >
+          {isLoading ? <span className="loader"></span> : 'Szukaj'}
+        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
